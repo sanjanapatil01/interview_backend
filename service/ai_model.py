@@ -73,126 +73,175 @@ def clean_report(raw_data):
     return result
       
 
-# def generate_final_report(session_data):
-#     prompt=f"""You are an AI interview evaluator. You are given a candidate’s interview session data, which includes:
-#     - Resume context
-#     - Questions asked
-#     - Candidate’s answers
-#     - Scores (1–10) for each answer
-#     - Feedback for each answer
-#     {session_data}
-#     Your task is to generate a structured final report that looks professional and concise.  
-     
-#     The report must include the following sections:
-
-#     1. Candidate Overview
-#       - Summarize the candidate’s background based on their resume.
-
-#     2. Overall Performance
-#       - Average score across all questions (round to 1 decimal).
-#       - Performance level (e.g., Beginner, Intermediate, Advanced).
-#       - 2–3 line summary of overall performance.
-
-#     3. Strengths
-#       - Bullet points highlighting strong aspects from higher-scoring answers.
-
-#     4. Weaknesses
-#       - Bullet points highlighting areas that need improvement from lower-scoring answers.
-
-#     5. Section-wise Evaluation
-#       - If questions are categorized (e.g., Technical, HR, General), give average score and short feedback for each section.
-
-#     6. Question-wise Breakdown
-#       - For each question: show Question, Answer (candidate’s), Score, and Feedback.
-
-#     7. Final Recommendation
-#       - Choose one: “Hire”, “Consider with Training”, or “Not Recommended”.
-#       - Give 1–2 sentences justification.
-
-#     Format the output in clean, readable text with headings and bullet points (not raw JSON) """
-
-#     response = client.chat.completions.create(
-#     model="gpt-4o-mini",
-#     messages=[{"role": "user", "content": prompt}]
-#     )
-#     content = response.choices[0].message.content.strip()
-
-#     if content.startswith('{') or content.startswith('['):
-#         raw_data = json.loads(content)
-#         #result=clean_report(raw_data)
-#         resul=raw_data
-#     else:
-#         result=content  
-#     return  result
-
 
 import json
 
-def generate_final_report(session_data):
-    prompt = f"""
-You are an AI interview evaluator. You are given a candidate’s interview session data:
-{session_data}
+"""
+# def generate_final_report(session_data):
+#     prompt = f""# You are an AI interview evaluator. You are given a candidate’s interview session data:
+# {session_data}
 
-Your task is to generate a structured final report in **JSON format only**. 
-The JSON must have the following structure:
+# Your task is to generate a structured final report in **JSON format only**. 
+# The JSON must have the following structure:
 
-{{
-  "candidate_overview": {{
-    "name": "<candidate name>",
-    "email": "<candidate email>",
-    "summary": "<brief summary based on resume>"
-  }},
-  "overall_performance": {{
-    "average_score": <average score>,
-    "performance_level": "<Beginner|Intermediate|Advanced>",
-    "summary": "<2-3 line summary of overall performance>"
-  }},
-  "strengths": ["<bullet points of strengths>"],
-  "weaknesses": ["<bullet points of weaknesses>"],
-  "section_wise_evaluation": {{
-    "Technical": {{
-      "average_score": <score>,
-      "feedback": "<short feedback>"
-    }},
-    "HR": {{
-      "average_score": <score>,
-      "feedback": "<short feedback>"
-    }},
-    "General": {{
-      "average_score": <score>,
-      "feedback": "<short feedback>"
-    }}
-  }},
-  "question_wise_breakdown": [
-    {{
-      "question": "<question text>",
-      "answer": "<candidate answer>",
-      "score": <score>,
-      "feedback": "<feedback>",
-      "type": "<Technical|HR|General>"
-    }}
-  ],
-  "final_recommendation": {{
-    "decision": "<Hire|Consider with Training|Not Recommended>",
-    "justification": "<1-2 sentence justification>"
-  }}
-}}
+# {{
+#   "candidate_overview": {{
+#     "name": "<candidate name>",
+#     "email": "<candidate email>",
+#     "summary": "<brief summary based on resume>"
+#   }},
+#   "overall_performance": {{
+#     "average_score": <average score>,
+#     "performance_level": "<Beginner|Intermediate|Advanced>",
+#     "summary": "<2-3 line summary of overall performance>"
+#   }},
+#   "strengths": ["<bullet points of strengths>"],
+#   "weaknesses": ["<bullet points of weaknesses>"],
+#   "section_wise_evaluation": {{
+#     "Technical": {{
+#       "average_score": <score>,
+#       "feedback": "<short feedback>"
+#     }},
+#     "HR": {{
+#       "average_score": <score>,
+#       "feedback": "<short feedback>"
+#     }},
+#     "General": {{
+#       "average_score": <score>,
+#       "feedback": "<short feedback>"
+#     }}
+#   }},
+#   "question_wise_breakdown": [
+#     {{
+#       "question": "<question text>",
+#       "answer": "<candidate answer>",
+#       "score": <score>,
+#       "feedback": "<feedback>",
+#       "type": "<Technical|HR|General>"
+#     }}
+#   ],
+#   "final_recommendation": {{
+#     "decision": "<Hire|Consider with Training|Not Recommended>",
+#     "justification": "<1-2 sentence justification>"
+#   }}
+# }}
 
-Return the JSON **only**, do not add any text or explanation outside the JSON.
+# Return the JSON **only**, do not add any text or explanation outside the JSON.
+# ""
+
+#     response = client.chat.completions.create(
+#         model="gpt-4o-mini",
+#         messages=[{"role": "user", "content": prompt}]
+#     )
+
+#     content = response.choices[0].message.content.strip()
+
+#     try:
+#         result = json.loads(content)
+#     except json.JSONDecodeError:
+#         # fallback if AI fails to generate valid JSON
+#         result = {"error": "AI did not return valid JSON", "raw_output": content}
+
+#     return result
 """
 
-    response = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[{"role": "user", "content": prompt}]
-    )
+from llama_cpp import Llama
+from flask import jsonify
+llm=Llama(model_path='models/open-llama-3b-v2-wizard-evol-instuct-v2-196k.Q4_K_M.gguf')
 
-    content = response.choices[0].message.content.strip()
+
+def generate_final_report(candidate_session_data):
+
+    prompt = f"""
+        You are an AI interview evaluator and a Senior Hiring Manager. Your task is to generate a structured, objective, and detailed final report in **JSON format ONLY**.
+
+        The quality of this report is critical for filtering candidates; therefore, all scores and feedback must be rigorously justified based *only* on the provided interview data and resume claims.
+
+        # CANDIDATE INTERVIEW SESSION DATA:
+        {candidate_session_data}
+
+        # SCORING CRITERIA (1-5 Scale):
+        - **Score 1 (Poor):** Demonstrates fundamental lack of knowledge.
+        - **Score 3 (Competent):** Demonstrates solid, but surface-level, understanding.
+        - **Score 5 (Expert):** Demonstrates mastery, critical thinking, and real-world application.
+        - *Use scores of 2 or 4 for intermediate performance levels.*
+
+        # EVALUATION INSTRUCTIONS:
+        1.  **Data Extraction:** Accurately pull 'name', 'email', and 'summary' details from the session data/resume embedded in the CANDIDATE INTERVIEW SESSION DATA.
+        2.  **Section Evaluation:** You must internally analyze every single Q&A turn to determine its type (Technical, HR, or General) and assign it a **Score (1-5)** based on the SCORING CRITERIA.
+        3.  **Section Averages:** Calculate the simple arithmetic mean for each section (`Technical`, `HR`, `General`) based on the scores assigned internally.
+        4.  **Overall Performance:**
+            * Calculate the final **`average_score`** across *all* scored questions.
+            * Determine **`performance_level`** based on the final average score:
+                * Average Score < 2.5: **Beginner**
+                * Average Score 2.5 - 3.9: **Intermediate**
+                * Average Score ≥ 4.0: **Advanced**
+        5.  **Strengths/Weaknesses:** List points that are **actionable** and tied directly to recurring patterns in the internal scoring (e.g., specific technology mastery vs. lack of architectural detail).
+        6.  **Final Recommendation:** Base the `decision` strictly on the `overall_performance` level and the balance of strengths vs. weaknesses.
+            * Advanced: **Hire**
+            * Intermediate: **Consider with Training**
+            * Beginner: **Not Recommended**
+
+        # FINAL REPORT STRUCTURE (JSON FORMAT ONLY):
+        {{
+          "candidate_overview": {{
+            "name": "<candidate name>",
+            "email": "<candidate email>",
+            "summary": "<brief summary based on resume>"
+          }},
+          "overall_performance": {{
+            "average_score": <overall average score to 1 decimal place>,
+            "performance_level": "<Beginner|Intermediate|Advanced>",
+            "summary": "<2-3 line executive summary of overall performance>"
+          }},
+          "strengths": ["<bullet points of key strengths>"],
+          "weaknesses": ["<bullet points of key weaknesses>"],
+          "section_wise_evaluation": {{
+            "Technical": {{
+              "average_score": <section average score to 1 decimal place>,
+              "feedback": "<short feedback on technical depth and problem-solving ability>"
+            }},
+            "HR": {{
+              "average_score": <section average score to 1 decimal place>,
+              "feedback": "<short feedback on behavioral maturity and decision-making>"
+            }},
+            "General": {{
+              "average_score": <section average score to 1 decimal place>,
+              "feedback": "<short feedback on career clarity and industry knowledge>"
+            }}
+          }},
+          "final_recommendation": {{
+            "decision": "<Hire|Consider with Training|Not Recommended>",
+            "justification": "<1-2 sentence justification based on overall performance and critical areas>"
+          }}
+        }}
+
+        Return the JSON **only**, do not add any text or explanation outside the JSON.
+        """
+    formatted_prompt = f"<s>[INST] {prompt.strip()} [/INST]"
 
     try:
-        result = json.loads(content)
-    except json.JSONDecodeError:
-        # fallback if AI fails to generate valid JSON
-        result = {"error": "AI did not return valid JSON", "raw_output": content}
+        output = llm(
+            formatted_prompt, 
+            max_tokens=2048, 
+            temperature=0.01, 
+            stream=False,
+            echo=False
+        )
+        
+        report_text = output["choices"][0]["text"].strip()
+        
+        if report_text.startswith("```json"):
+            report_text = report_text.strip("```json").strip()
+        
+        final_report = json.loads(report_text)
+        return jsonify({"report": final_report, "status": "complete"})
 
-    return result
-
+    except json.JSONDecodeError as e:
+        return jsonify({
+            "error": "Failed to generate valid JSON report.",
+            "llm_output": report_text,
+            "details": str(e)
+        }), 500
+    except Exception as e:
+        return jsonify({"error": f"LLM generation failed: {str(e)}"}), 500
