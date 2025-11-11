@@ -59,7 +59,7 @@ Return JSON only in this exact format:
     return result
 
 def clean_report(raw_data):
-    sections = re.split(r'\n## ', raw_data)  # Split by section headers at level 2
+    sections = re.split(r'\n## ', raw_data)  
 
     report_dict = {}
 
@@ -147,7 +147,7 @@ import json
 
 from llama_cpp import Llama
 from flask import jsonify
-llm=Llama(model_path='models/open-llama-3b-v2-wizard-evol-instuct-v2-196k.Q4_K_M.gguf')
+llm=Llama(model_path='models/mistral-7b-instruct-v0.1.Q4_K_M.gguf',n_ctx=4096)
 
 
 def generate_final_report(candidate_session_data):
@@ -235,13 +235,13 @@ def generate_final_report(candidate_session_data):
             report_text = report_text.strip("```json").strip()
         
         final_report = json.loads(report_text)
-        return jsonify({"report": final_report, "status": "complete"})
+        return final_report
 
     except json.JSONDecodeError as e:
-        return jsonify({
+        return {
             "error": "Failed to generate valid JSON report.",
             "llm_output": report_text,
             "details": str(e)
-        }), 500
+        }
     except Exception as e:
-        return jsonify({"error": f"LLM generation failed: {str(e)}"}), 500
+        return {"error": f"LLM generation failed: {str(e)}"}

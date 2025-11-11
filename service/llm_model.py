@@ -37,7 +37,7 @@ import json
         
 from llama_cpp import Llama
 from flask import jsonify
-llm=Llama(model_path='models\mistral-7b-instruct-v0.1.Q4_K_M.gguf',n_ctx=4096)
+llm=Llama(model_path='models/mistral-7b-instruct-v0.1.Q4_K_M.gguf',n_ctx=4096)
 
 
 def dynamic_questions_gen_model(resume_data, history, last_answer):
@@ -83,7 +83,15 @@ def dynamic_questions_gen_model(resume_data, history, last_answer):
       )
   question_text = output["choices"][0]["text"].strip()
   print(f'the generated question is :{question_text}')
-  return question_text
+  # return question_text
+  try:
+    parsed = json.loads(question_text)
+  except json.JSONDecodeError as e:
+    print("Failed to parse JSON:", e)
+    raise ValueError("LLM returned invalid JSON format")
+  if not isinstance(parsed, dict) or "question" not in parsed:
+     raise ValueError("Parsed output missing 'question' key")
+  return parsed['question']
 
 
 

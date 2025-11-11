@@ -103,6 +103,7 @@ def handle_interview_session(session_id, answer,resume_data):
     current_question=session['question_no']
     session['data'][current_question-1]['answer']=answer
     next_question=dynamic_questions_gen_model(resume_data,session,answer)
+    print(f"Next question generated: {next_question}")
     session['data'].append({
         'question':next_question,
         'answer':None
@@ -111,7 +112,7 @@ def handle_interview_session(session_id, answer,resume_data):
     print(f'This is the session:{session}')
     r.set(session_id, json.dumps(session))
     r.expire(session_id, 86400)
-    if session['question_no'] >= 20:
+    if session['question_no'] >= 5:
         return {
             "next_question": None,
             "stop": True

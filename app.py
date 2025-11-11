@@ -109,6 +109,7 @@ def submit_answer(user_id):
         return jsonify({"error": "session_id and answer are required"}), 400
 
     result = handle_interview_session(session_id, answer,resume_data)
+    print(f"i am in submit answer route the result is :{result}")
 
     if result.get("stop"):
         session_data = r.get(session_id)
@@ -117,15 +118,16 @@ def submit_answer(user_id):
             user_id = session['user_id']
             final_report_data = generate_final_report(session)
 
+            # Convert the report to JSON string for storage
             if isinstance(final_report_data, dict):
                 final_report_text = json.dumps(final_report_data)
             else:
-                final_report_text = final_report_data  
+                final_report_text = str(final_report_data)
+            
             report = FinalReport(user_id=user_id, report_text=final_report_text)
             db.session.add(report)
             db.session.commit()
         r.delete(session_id)
-
         return jsonify({
             "message": "Interview Finished!",
             "final_report": final_report_data 
