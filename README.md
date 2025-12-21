@@ -52,6 +52,8 @@ Create a `.env` file in the root directory.
 ### `.env`
 
 ```env
+REDIS_URL = "redis://localhost:6379/0"
+
 FLASK_ENV=development
 FLASK_APP=app.py
 ```
@@ -197,4 +199,5 @@ All rights reserved.
 Coded by **Suhen M. G** and **Sanjana M. Patil**
 
 ---
+
 
