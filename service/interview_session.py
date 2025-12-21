@@ -112,7 +112,7 @@ def handle_interview_session(session_id, answer,resume_data):
     print(f'This is the session:{session}')
     r.set(session_id, json.dumps(session))
     r.expire(session_id, 86400)
-    if session['question_no'] >= 5:
+    if session['question_no'] >= 3:
         return {
             "next_question": None,
             "stop": True
