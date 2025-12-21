@@ -1,8 +1,9 @@
 
-# Interview.ai– AI Interview Evaluation Service
+
+# Interview.ai – AI Interview Evaluation Service
 
 Interview.ai is a Python-based AI interview engine responsible for conducting interviews, evaluating candidate answers, generating follow-up questions, and producing structured interview reports.
-It integrates Large Language Models, Redis for session management, and Flask APIs for seamless communication with the frontend.
+It integrates Large Language Models (LLMs), Redis for session management, and Flask APIs for seamless communication with the frontend.
 
 ---
 
@@ -17,7 +18,7 @@ AUTO_INTERVIEW/
 │   ├── interview_session.py
 │
 ├── models/
-│   ├── models.py
+│   ├── mistral-7b-instruct-v0.1.Q4_K_M.gguf
 │
 ├── uploads/
 │
@@ -40,7 +41,7 @@ AUTO_INTERVIEW/
 * Docker (for Redis)
 * Redis (via Docker container)
 * Virtual environment support (recommended)
-* LLM runtime (local or API-based, depending on configuration)
+* Local LLM runtime (GGUF-based model)
 
 ---
 
@@ -53,10 +54,59 @@ Create a `.env` file in the root directory.
 ```env
 FLASK_ENV=development
 FLASK_APP=app.py
-
-
 ```
 
+---
+
+## Create Required Folders
+
+Before running the application, ensure the following folders exist:
+
+```bash
+mkdir uploads
+mkdir models
+```
+
+* `uploads/` is used to store uploaded resumes and temporary interview files.
+* `models/` stores the local LLM model files.
+
+---
+
+## Download AI Model (Hugging Face)
+
+This project uses a **local Mistral 7B Instruct model (GGUF format)**.
+
+### Recommended Model
+
+```
+mistral-7b-instruct-v0.1.Q4_K_M.gguf
+```
+
+### Download Steps
+
+1. Visit Hugging Face:
+
+```
+https://huggingface.co/TheBloke/Mistral-7B-Instruct-v0.1-GGUF
+```
+
+2. Download the file:
+
+```
+mistral-7b-instruct-v0.1.Q4_K_M.gguf
+```
+
+3. Place the model file inside:
+
+```
+interview_backend/models/
+```
+
+Final path:
+
+```
+interview_backend/models/mistral-7b-instruct-v0.1.Q4_K_M.gguf
+```
 
 ---
 
@@ -113,7 +163,6 @@ http://127.0.0.1:5000
 
 ---
 
-
 ## Key Features
 
 * AI-driven interview question flow
@@ -126,14 +175,12 @@ http://127.0.0.1:5000
 
 ---
 
-
-
 ## Development Notes
 
-* AI evaluation logic is in `service/ai_model.py`
-* Session lifecycle handled in `interview_session.py`
-* LLM prompts and evaluation rules are configurable
-* Designed to integrate with external Node.js backend
+* AI evaluation logic is implemented in `service/ai_model.py`
+* Interview session lifecycle is handled in `service/interview_session.py`
+* LLM loading and prompt handling is managed in `service/llm_model.py`
+* Designed to integrate with an external Node.js backend
 
 ---
 
@@ -143,5 +190,11 @@ This project is intended for educational and professional use.
 All rights reserved.
 
 ---
-## Team : SuPrazo Technologies 
-< Coded By Suhen.M.G and Sanjana.M.Patil />
+
+## Team
+
+**SuPrazo Technologies**
+Coded by **Suhen M. G** and **Sanjana M. Patil**
+
+---
+
