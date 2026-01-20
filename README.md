@@ -186,12 +186,7 @@ http://127.0.0.1:5000
 
 ---
 
-## License
 
-This project is intended for educational and professional use.
-All rights reserved.
-
----
 
 
 
