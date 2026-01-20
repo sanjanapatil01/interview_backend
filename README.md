@@ -193,11 +193,5 @@ All rights reserved.
 
 ---
 
-## Team
-
-**SuPrazo Technologies**
-Coded by **Suhen M. G** and **Sanjana M. Patil**
-
----
 
 
